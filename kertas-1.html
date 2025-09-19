@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surat Cinta Interaktif</title>
+<style>
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  height:100vh;
+  background: pink url('flowers-bg.png') center/cover no-repeat;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* Kertas surat */
+@keyframes sparkle { 0%,100%{box-shadow:0 0 0px #fff;}50%{box-shadow:0 0 20px #fff;} }
+.paper {
+  position: relative;
+  width: 60%;
+  max-width: 700px;
+  background: #fffaf0;
+  padding: 50px 40px;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  border: 1px solid #f5e0d3;
+  text-align: center;
+  animation:sparkle 2s infinite alternate;
+  z-index: 1;
+}
+.paper h1 { color:#ff6b81; }
+.paper p { font-size:18px; line-height:1.8; color:#555; }
+
+/* Foto kiri bawah & kanan atas */
+.photo {
+  position: absolute;
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+.photo.left { bottom:20px; left:20px; }
+.photo.right { top:20px; right:20px; }
+
+/* Popup hadiah */
+#popup {
+  position: fixed;
+  top:50%; left:50%;
+  transform: translate(-50%, -50%);
+  width:220px; height:220px;
+  display:none;
+  z-index:1000;
+}
+.gift-box {
+  position: relative;
+  width:100%; height:100%;
+  perspective:1000px;
+  transform: scale(0);
+  animation:popupGrow 1s forwards;
+}
+@keyframes popupGrow { 0%{transform:scale(0) rotate(0deg);} 50%{transform:scale(1.2) rotate(15deg);} 100%{transform:scale(1) rotate(0deg);} }
+
+.lid, .ribbon {
+  position:absolute; width:100%; height:50%; left:0;
+  background:#ff6b81; border-radius:5px; transform-origin: bottom; z-index:2; transition: transform 1s ease;
+}
+.ribbon { height:10px; top:0; background:#ff1493; border-radius:2px; }
+.lid { top:0; }
+.base { position:absolute; bottom:0; width:100%; height:100%; background:#fffaf0; border-radius:5px; border:2px solid #ff1493; }
+.gift-content { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%) scale(0); font-size:24px; color:#ff6b81; transition: transform 0.5s ease; z-index:3; }
+#popup button { position:absolute; bottom:-50px; left:50%; transform:translateX(-50%); padding:8px 16px; border:none; border-radius:15px; background:#ff6b81; color:white; cursor:pointer; }
+#popup button:hover { background:#ff1493; }
+
+/* Animasi kotak */
+@keyframes jump { 0%,100%{transform:translateY(0);}50%{transform:translateY(-15px) rotate(-10deg);} }
+#popup.show .gift-box { animation: jump 1s infinite; }
+#popup.show .lid { transform: rotateX(-75deg); }
+#popup.show .gift-content { transform:translate(-50%, -50%) scale(1); }
+
+/* Confetti lucu */
+.confetti { position:absolute; width:12px; height:12px; pointer-events:none; opacity:0; animation:fall 3s forwards; }
+.confetti.heart::after { content:"❤"; display:block; font-size:14px; }
+.confetti.star::after { content:"★"; display:block; font-size:14px; color:gold; }
+.confetti.flower::after { content:"🌸"; display:block; font-size:14px; }
+@keyframes fall { 0% { transform:translateY(0) rotate(0deg); opacity:1;} 100% { transform:translateY(300px) rotate(360deg); opacity:0;} }
+
+</style>
+</head>
+<body>
+
+<img src="kageyama2.png" class="photo left" alt="Foto Kiri">
+<img src="kageyama2.png" class="photo right" alt="Foto Kanan">
+
+<div class="paper">
+  <h1>Untukmu Sayang 💖</h1>
+  <p>Selamat ulang tahun, sayang maaf ya kalo ga bisa bertemu hari ini belom bisa langsung ucapin
+    tapi ntar kita ketemu ,aku bakal rayain lagi ,intinya sehat2 ya sayangku semoga bahagia terus,
+    hal yang kamu inginkan tercapa
+    I love u acha
+
+
+    
+  </p>
+</div>
+
+<div id="popup">
+  <div class="gift-box">
+    <div class="ribbon"></div>
+    <div class="lid"></div>
+    <div class="base"></div>
+    <div class="gift-content">🎁 Surprise! 🎁</div>
+  </div>
+  <button onclick="goToPage()">Buka Hadiah</button>
+</div>
+
+<audio id="boxSound"><source src="open-box.mp3" type="audio/mpeg"></audio>
+<audio id="confettiSound"><source src="confetti.mp3" type="audio/mpeg"></audio>
+
+<script>
+const popup = document.getElementById('popup');
+const boxSound = document.getElementById('boxSound');
+const confettiSound = document.getElementById('confettiSound');
+
+// tampil popup setelah 10 detik
+setTimeout(() => {
+  popup.style.display = 'block';
+  boxSound.play();
+  setTimeout(()=> { 
+    popup.classList.add('show'); 
+    confettiSound.play();
+    createConfetti(60); 
+  }, 500);
+}, 10000);
+
+function goToPage(){
+  window.location.href = 'game.html';
+}
+
+function createConfetti(count){
+  const shapes = ['heart','star','flower'];
+  for(let i=0;i<count;i++){
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti', shapes[Math.floor(Math.random()*shapes.length)]);
+    confetti.style.left = Math.random()*window.innerWidth + 'px';
+    confetti.style.animationDuration = (2+Math.random()*2)+'s';
+    document.body.appendChild(confetti);
+    setTimeout(()=> confetti.remove(), 3000);
+  }
+}
+</script>
+
+</body>
+</html>

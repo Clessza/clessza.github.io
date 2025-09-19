@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Romantis — Hadiah Video</title>
+  <style>
+    body {
+      margin:0; font-family:Arial, sans-serif; background:#fff0f6; color:#333;
+      display:flex; flex-direction:column; align-items:center; min-height:100vh;
+    }
+    header { padding:20px; text-align:center; color:#ff4d6d; }
+    header h1 { margin:0; font-size:26px; }
+    header p { margin:6px 0 0; font-size:14px; color:#888; }
+
+    .game {
+      display:grid; grid-template-columns:repeat(4,80px); gap:12px; margin-top:20px;
+    }
+    .card { width:80px; height:100px; perspective:600px; cursor:pointer; }
+    .inner { position:relative; width:100%; height:100%; transition:transform 0.6s; transform-style:preserve-3d; }
+    .flipped .inner { transform:rotateY(180deg); }
+    .front,.back {
+      position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:10px;
+      display:flex; align-items:center; justify-content:center; font-size:28px;
+    }
+    .front { background:#ff99ac; color:#fff; }
+    .back { background:#fff; border:2px solid #ff99ac; transform:rotateY(180deg); font-size:34px; }
+
+    footer { margin-top:auto; padding:16px; color:#999; font-size:13px; }
+
+    /* modal video */
+    .modal {
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.6); padding:20px;
+    }
+    .modal.open { display:flex; }
+    .modal .video-box {
+      width:90%; max-width:700px; background:#000; border-radius:12px; overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    }
+    .modal video { width:100%; height:auto; display:block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Game Romantis</h1>
+    <p>Cocokkan pasangan hati, lalu nikmati hadiah video romantis 🎬💖</p>
+  </header>
+
+  <div class="game" id="game"></div>
+
+  <!-- Modal Video -->
+  <div class="modal" id="modal">
+    <div class="video-box">
+      <video id="rewardVideo" controls autoplay playsinline>
+        <source src="video.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <footer>© 2025 Game Romantis</footer>
+
+  <script>
+    const icons = ["❤️","💖","🌹","💌","💕","🌸","💍","😘"];
+    let cards = [...icons,...icons];
+    cards.sort(()=>Math.random()-0.5);
+
+    const game = document.getElementById("game");
+    const modal = document.getElementById("modal");
+    const rewardVideo = document.getElementById("rewardVideo");
+
+    let flipped = [];
+    let matched = [];
+
+    function createCard(icon){
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <div class="inner">
+          <div class="front">?</div>
+          <div class="back">${icon}</div>
+        </div>`;
+      card.addEventListener("click", ()=>flipCard(card, icon));
+      return card;
+    }
+
+    function flipCard(card, icon){
+      if(flipped.length===2 || card.classList.contains("flipped") || matched.includes(icon)) return;
+      card.classList.add("flipped");
+      flipped.push({card, icon});
+      if(flipped.length===2){
+        if(flipped[0].icon===flipped[1].icon){
+          matched.push(icon);
+          flipped=[];
+          if(matched.length===icons.length){
+            setTimeout(()=>{
+              modal.classList.add("open");
+              rewardVideo.currentTime=0;
+              rewardVideo.play();
+            },500);
+          }
+        } else {
+          setTimeout(()=>{
+            flipped.forEach(c=>c.card.classList.remove("flipped"));
+            flipped=[];
+          },1000);
+        }
+      }
+    }
+
+    function init(){
+      game.innerHTML="";
+      cards.forEach(icon=>game.appendChild(createCard(icon)));
+    }
+    init();
+
+    modal.addEventListener("click", e=>{
+      if(e.target===modal){
+        modal.classList.remove("open");
+        rewardVideo.pause();
+      }
+    });
+  </script>
+</body>
+</html>

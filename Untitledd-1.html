@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Selamat Ulang Tahun 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {margin:0; font-family:'Poppins', sans-serif; background:linear-gradient(135deg,#ffecd2,#fcb69f); overflow-x:hidden;}
+    h1,h2 {font-family:'Fredoka One',cursive;}
+    .container {min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;}
+
+    h1 {font-size:3rem; color:#ff4e88; margin-bottom:.5rem;}
+    p {color:#444; font-size:1.2rem;}
+
+    .balloons {position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;}
+    .balloon {position:absolute; bottom:-150px; width:80px; height:110px; background:#ff6b9a; border-radius:50%; opacity:0.9; animation: float 8s linear infinite;}
+    .balloon:after {content:''; position:absolute; width:2px; height:60px; background:#333; top:110px; left:50%; transform:translateX(-50%);} 
+
+    @keyframes float {
+      0% {transform: translateY(0) rotate(0);} 
+      100% {transform: translateY(-120vh) rotate(360deg);} 
+    }
+
+    button {margin-top:1.5rem; background:#ff4e88; color:white; border:none; padding:.7rem 1.4rem; border-radius:12px; font-size:1rem; cursor:pointer; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+    button:hover {background:#ff2d6e;}
+
+    .cake {margin-top:2rem; position:relative; width:160px; height:120px; background:#ffb347; border-radius:0 0 15px 15px; box-shadow:0 8px 20px rgba(0,0,0,0.15);}
+    .cake:before {content:''; position:absolute; top:-30px; left:0; width:100%; height:30px; background:#ffe0b2; border-radius:10px 10px 0 0;}
+    .candle {position:absolute; top:-50px; left:50%; transform:translateX(-50%); width:16px; height:50px; background:#fff176; border-radius:4px;}
+    .flame {position:absolute; top:-25px; left:50%; transform:translateX(-50%); width:20px; height:30px; background:radial-gradient(circle at 50% 50%,#ffeb3b 20%,#ff9800 60%,transparent 70%); border-radius:50%; animation:flicker .8s infinite alternate;}
+
+    @keyframes flicker {0%{transform:translateX(-50%) scale(1);}100%{transform:translateX(-50%) scale(1.2);}}
+
+    .surprise {margin-top:2rem; font-size:1.3rem; color:#333; font-weight:600;}
+
+    /* popup gift */
+    .modal {position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:.3s;}
+    .modal.open {opacity:1; pointer-events:auto;}
+    .gift-box {background:white; padding:1.5rem; border-radius:14px; text-align:center; max-width:360px; box-shadow:0 15px 40px rgba(0,0,0,0.3);}
+    .gift-box img {width:120px; animation:bounce 1s infinite alternate;}
+    @keyframes bounce {0%{transform:translateY(0);}100%{transform:translateY(-12px);}}
+    .close-btn {margin-top:1rem; background:#ff4e88; color:white; border:none; padding:.5rem 1rem; border-radius:8px; cursor:pointer;}
+  </style>
+</head>
+<body>
+  <div class="balloons" id="balloons"></div>
+  <div class="container">
+    <h1>Selamat Ulang Tahun 🎂🥳</h1>
+    <p>Hari ini hari spesialmu! Semoga bahagia selalu 💖</p>
+
+    <div class="cake">
+      <div class="candle"></div>
+      <div class="flame"></div>
+    </div>
+
+    <button id="btnSurprise">Klik untuk kejutan 🎁</button>
+    <div class="surprise" id="surprise"></div>
+  </div>
+
+  <!-- modal gift -->
+  <div class="modal" id="giftModal">
+    <div class="gift-box">
+      <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="gift">
+      <h2>Selamat Ulang Tahun! 🎉</h2>
+      <p>Semoga harimu penuh hadiah, tawa, dan cinta! 💝</p>
+      <button class="close-btn" id="closeGift">Tutup</button>
+    </div>
+  </div>
+
+  <audio id="music" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c2c7a4ad1e.mp3?filename=happy-birthday-to-you-piano-112474.mp3"></audio>
+
+  <script>
+    // generate balloons
+    const colors = ['#ff6b9a','#ffdd59','#17c0eb','#32ff7e','#7158e2'];
+    function spawnBalloon(){
+      const b = document.createElement('div');
+      b.className='balloon';
+      b.style.left = Math.random()*100+'%';
+      b.style.background = colors[Math.floor(Math.random()*colors.length)];
+      b.style.animationDuration = 6+Math.random()*6+'s';
+      document.getElementById('balloons').appendChild(b);
+      setTimeout(()=>b.remove(),12000);
+    }
+    setInterval(spawnBalloon,600);
+
+    // music auto play on load
+    const music = document.getElementById('music');
+    window.addEventListener('load',()=>{
+      music.play().catch(()=>{
+        console.log('Autoplay mungkin diblokir, tunggu interaksi user.');
+      });
+    });
+
+    // music + surprise message + popup gift
+    const btn = document.getElementById('btnSurprise');
+    const surprise = document.getElementById('surprise');
+    const giftModal = document.getElementById('giftModal');
+    const closeGift = document.getElementById('closeGift');
+    const wishes = [
+      '🎉 Semoga semua mimpi jadi nyata!',
+      '🍰 Banyak rezeki dan kebahagiaan!',
+      '🌟 Selalu sehat dan panjang umur!',
+      '😂 Jangan lupa traktir ya!',
+      '🎁 Semoga tahun ini lebih seru dari sebelumnya!'
+    ];
+
+    btn.addEventListener('click', ()=>{
+      const wish = wishes[Math.floor(Math.random()*wishes.length)];
+      surprise.textContent = wish;
+      giftModal.classList.add('open');
+    });
+
+    closeGift.addEventListener('click', ()=>{
+      giftModal.classList.remove('open');
+      // redirect ke halaman berikutnya
+      window.location.href = 'surat.html'; // ganti sesuai nama file tujuan
+    });
+  </script>
+</body>
+</html>
